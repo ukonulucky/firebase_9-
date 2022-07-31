@@ -3,7 +3,7 @@ import { initializeApp } from "firebase/app"
 import {
  getFirestore, collection, getDocs
 } from "firebase/firestore"
- const firebaseConfig = {
+export  const firebaseConfig = {
     apiKey: "AIzaSyBpFZL1M--57WjLO2XeMZ2BAIh-ElZbL8Q",
     authDomain: "fir-9-project-1b3de.firebaseapp.com",
     projectId: "fir-9-project-1b3de",
@@ -12,7 +12,7 @@ import {
     appId: "1:238355885829:web:4455c1ba5772d4604a916c"
  };
   
-initializeApp(firebaseConfig)
+ initializeApp(firebaseConfig)
  
 // adding services
 
@@ -20,7 +20,7 @@ const db = getFirestore()
 
 // getting collection
 
-const colRef = collection(db, "books")
+export const colRef = collection(db, "books")
  
 // getting documents
 
@@ -43,5 +43,3 @@ const getData = async () => {
 }
 
 getData()
-
-export default firebaseConfig
