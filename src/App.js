@@ -8,7 +8,7 @@ import {
 
 function App() {
   useEffect(() => {
-    window.title = "my home page"
+    document.title = "Home Page"
   },[])
   const formRef = useRef()
   const [input, setInput] = useState({
