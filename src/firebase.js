@@ -1,7 +1,7 @@
 
 import { initializeApp } from "firebase/app"
 import {
- getFirestore, collection, getDocs
+ getFirestore, collection, onSnapshot
 } from "firebase/firestore"
 export  const firebaseConfig = {
     apiKey: "AIzaSyBpFZL1M--57WjLO2XeMZ2BAIh-ElZbL8Q",
@@ -16,7 +16,7 @@ export  const firebaseConfig = {
  
 // adding services
 
-const db = getFirestore()
+export const db = getFirestore()
 
 // getting collection
 
@@ -26,17 +26,18 @@ export const colRef = collection(db, "books")
 
 const getData = async () => {
     try {
-        const res = await getDocs(colRef)
-         const books = []
-        if (res) {
-            res.docs.forEach(i => books.push({
-                ...i.data(),
-                id: i.id
- 
-            }))
-            console.log(books)
-        }
-    
+      
+        onSnapshot(colRef, (snaps) => {
+            const books = []
+                snaps.docs.forEach(i => books.push({
+                    ...i.data(),
+                    id: i.id
+     
+                }))
+                console.log(books)
+        })
+        
+      
   } catch (error) {
     console.log(error)
   }
