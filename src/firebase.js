@@ -1,8 +1,11 @@
 
 import { initializeApp } from "firebase/app"
 import {
- getFirestore, collection, onSnapshot
+ getFirestore, collection, onSnapshot, serverTimestamp, orderBy
 } from "firebase/firestore"
+import { 
+    getAuth
+} from "firebase/auth"
 export  const firebaseConfig = {
     apiKey: "AIzaSyBpFZL1M--57WjLO2XeMZ2BAIh-ElZbL8Q",
     authDomain: "fir-9-project-1b3de.firebaseapp.com",
@@ -32,7 +35,6 @@ const getData = async () => {
                 snaps.docs.forEach(i => books.push({
                     ...i.data(),
                     id: i.id
-     
                 }))
                 console.log(books)
         })
@@ -44,3 +46,6 @@ const getData = async () => {
 }
 
 getData()
+
+// authentiation
+export const auth = getAuth()

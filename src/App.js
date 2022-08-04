@@ -3,13 +3,17 @@ import './App.css';
 import "bootstrap/dist/css/bootstrap.min.css"
 import { colRef,db } from "./firebase"
 import {
-  addDoc, deleteDoc,  doc, onSnapshot, query, where
+  addDoc, deleteDoc,  doc, onSnapshot, query, where,orderBy, serverTimestamp,getDoc,updateDoc
 } from "firebase/firestore"
 
 function App() {
   useEffect(() => {
     document.title = "Home Page"
-  },[])
+  }, [])
+  const [userInput, setUserInput] = useState({
+    name: "",
+    email:""
+  })
   const formRef = useRef()
   const formDeleteRef = useRef()
  
@@ -35,7 +39,7 @@ const [input, setInput] = useState({
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    setUser(input.title && input.position ? { ...input } : null)
+    setUser(input.title && input.position ? { ...input, createdAt: serverTimestamp() } : null)
    
     try {
       if (user.title && user.position) {
@@ -86,16 +90,24 @@ const [input, setInput] = useState({
  
   // quering the dom starts here//
   const [queryData, setQueryData] = useState("")
-  const dataQuery = query(colRef, where("position", "==", queryData))
+  const dataQuery = query(colRef, where("position", "==", queryData),orderBy("createdAt"))
  
   const formQueryRef = useRef()
   const queryRef = useRef()
 
   const handleSubmitQuery = (e) => {
     e.preventDefault()
+   
     setQueryData(queryRef.current.value ? queryRef.current.value : "")
     console.log(queryData)
     if (queryData) {
+      const input = doc(db, "books", queryData)
+      updateDoc(input, {
+        title:"just updated title"
+      }).then(() => {
+        console.log("update successful")
+        formQueryRef.current.value = ""
+      })
       onSnapshot(dataQuery, (snaps) => {
        const queryAuthor = []
         snaps.docs.forEach(i =>    queryAuthor.push({
@@ -103,6 +115,7 @@ const [input, setInput] = useState({
         }))
         console.log(queryAuthor)
       })
+
       formQueryRef.current.value = ""
       
     }
@@ -110,6 +123,17 @@ const [input, setInput] = useState({
 
 }
   // quering the dom ends here //
+
+  // create a user section starts//
+  const createUser = (e) => {
+    e.preventDefault()
+  
+  
+ }
+  //create a user section ends //
+
+  
+
   return (
     <div className="App">
       <form className="w-50 m-auto" onSubmit={handleSubmit} ref={formRef}>
@@ -156,7 +180,39 @@ const [input, setInput] = useState({
 
 
       </div>
+
+      <h2>Firebase Auth</h2>
+      
+      <form className="w-50 m-auto" onSubmit={createUser} >
+        <div className="form-group d-flex align-center mt-5">
+        <label className="form-label m-3" htmlFor="title">Email:</label>
+          <input type="text" name="title" className="form-control  d-inline"
+            placeholder="Enter Author" onChange = {
+              (e) => {
+                userInput.email === "" ? setUserInput({
+                  ...userInput, email:e.target.value
+                }) : ""
+              }
+           } />
+          <label className="form-label m-3" htmlFor="title">Name:</label>
+          <input type="text" name="title" className="form-control  d-inline"
+             placeholder="Enter Author"
+            onChange={(e) => {
+              userInput.name === "" ? setUserInput({
+                ...userInput, name:e.target.value
+              }) : ""
+            }} />
+          
+        </div> 
+        
+        <button className="btn btn-primary h2 d-flex mt-5 align-center justify-center" >
+          create User
+        </button>
+
+      </form>
+      
     </div>
+    
   );
 }
 
