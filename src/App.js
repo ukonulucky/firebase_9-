@@ -3,15 +3,22 @@ import './App.css';
 import "bootstrap/dist/css/bootstrap.min.css"
 import { colRef,db } from "./firebase"
 import {
-  addDoc, deleteDoc,  doc, onSnapshot, query, where,orderBy, serverTimestamp,getDoc,updateDoc
+  addDoc, deleteDoc,  doc, onSnapshot, query, where,orderBy, serverTimestamp,getDoc,updateDoc 
 } from "firebase/firestore"
+import {
+  createUserWithEmailAndPassword, getAuth, signOut, signInWithEmailAndPassword
+} from "firebase/auth"
 
 function App() {
   useEffect(() => {
     document.title = "Home Page"
   }, [])
   const [userInput, setUserInput] = useState({
-    name: "",
+    password: "",
+    email:""
+  })
+  const [userSignIn, setUserSignIn] = useState({
+    password: "",
     email:""
   })
   const formRef = useRef()
@@ -127,10 +134,37 @@ const [input, setInput] = useState({
   // create a user section starts//
   const createUser = (e) => {
     e.preventDefault()
-  
+    const auth = getAuth()
+    const { email, password } = userInput
+    console.log(email,password)
+    if (email && password) {
+      createUserWithEmailAndPassword(auth, email, password).then(function (cred) {
+        console.log(cred.user);
+      }).catch(err =>console.log( err.message)) 
+ }
   
  }
   //create a user section ends //
+
+  //signout user section starts //
+  const signOutUser = () => {
+    const auth = getAuth()
+    signOut(auth).then(() => console.log("user just signed out")).catch(err => console.log(err.message))
+  }
+
+  //signout user section ends //
+// signing userin section starts here //
+  const handleSignIn = (e) => {
+    e.preventDefault()
+    const { email, password } = userSignIn
+    const auth = getAuth()
+    console.log(email, password)
+    if (email && password) {
+     signInWithEmailAndPassword(auth, email, password).then(userData => console.log(userData.user)).catch(err => console.log(err.message))
+   }
+  }
+//signing userout section ends here//
+
 
   
 
@@ -182,25 +216,26 @@ const [input, setInput] = useState({
       </div>
 
       <h2>Firebase Auth</h2>
+      <h3>Create User</h3>
       
       <form className="w-50 m-auto" onSubmit={createUser} >
         <div className="form-group d-flex align-center mt-5">
         <label className="form-label m-3" htmlFor="title">Email:</label>
-          <input type="text" name="title" className="form-control  d-inline"
+          <input type="email" name="title" className="form-control  d-inline"
             placeholder="Enter Author" onChange = {
               (e) => {
-                userInput.email === "" ? setUserInput({
+               setUserInput({
                   ...userInput, email:e.target.value
-                }) : ""
+                }  )
               }
            } />
-          <label className="form-label m-3" htmlFor="title">Name:</label>
-          <input type="text" name="title" className="form-control  d-inline"
-             placeholder="Enter Author"
+          <label className="form-label m-3" htmlFor="title">Password:</label>
+          <input type="password" name="title" className="form-control  d-inline"
+             placeholder="Enter Password"
             onChange={(e) => {
-              userInput.name === "" ? setUserInput({
-                ...userInput, name:e.target.value
-              }) : ""
+               setUserInput( {
+                ...userInput, password:e.target.value
+              }  )
             }} />
           
         </div> 
@@ -210,6 +245,38 @@ const [input, setInput] = useState({
         </button>
 
       </form>
+      <h3>Sign In User</h3>
+      <form className="w-50 m-auto" onSubmit={handleSignIn} >
+        <div className="form-group d-flex align-center mt-5">
+        <label className="form-label m-3" htmlFor="title">Email:</label>
+          <input type="email" name="title" className="form-control  d-inline"
+            placeholder="Enter Email" onChange = {
+              (e) => {
+               setUserSignIn({
+                  ...userSignIn, email:e.target.value
+                }  )
+              }
+           } />
+          <label className="form-label m-3" htmlFor="title">Password:</label>
+          <input type="password" name="title" className="form-control  d-inline"
+             placeholder="Enter Password"
+            onChange={(e) => {
+               setUserSignIn( {
+                ...userSignIn, password:e.target.value
+              }  )
+            }} />
+          
+        </div> 
+        
+        <button className="btn btn-primary h2 d-flex mt-5 align-center justify-center" >
+          Sign in
+        </button>
+
+      </form>
+  
+      <button className="btn btn-primary h2 mb-4 d-flex m-auto align-center justify-center" onClick={signOutUser} >
+          Sign Out
+        </button>
       
     </div>
     
